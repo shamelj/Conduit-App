@@ -3,6 +3,9 @@ using Domain.Shared;
 
 namespace Domain.CommentFeature.Services;
 
-public interface ICommentService : IService<Comment, long>
+public interface ICommentService
 {
+    Task Create(Comment comment);
+    Task DeleteById(long id);
+
 }

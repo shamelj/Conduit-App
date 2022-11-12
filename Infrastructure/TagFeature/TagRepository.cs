@@ -1,0 +1,31 @@
+﻿using Domain.TagFeature.Models;
+using Domain.TagFeature.Services;
+using Infrastructure.Shared;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.TagFeature;
+
+public class TagRepository : ITagRepository
+{
+    private readonly ConduitDbContext _context;
+    private readonly DbSet<TagEntity> _dbSet;
+
+    public TagRepository(ConduitDbContext context)
+    {
+        _context = context;
+        _dbSet = context.Set<TagEntity>();
+    }
+    public async Task Upsert(Tag tag)
+    {
+        if (!await _dbSet.AnyAsync(entity => entity.Name.Equals(tag.Name)))
+            _dbSet.Add(tag.Adapt<TagEntity>());
+    }
+
+    public async Task<IEnumerable<Tag>> List()
+    {
+        return await _dbSet
+            .Select(entity => entity.Adapt<Tag>())
+            .ToListAsync();
+    }
+}

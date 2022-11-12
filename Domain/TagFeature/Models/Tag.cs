@@ -2,12 +2,8 @@
 
 namespace Domain.TagFeature.Models;
 
-public class Tag : IBaseModel<string>
+public class Tag 
 {
     public string Name { get; set; }
 
-    public string GetId()
-    {
-        return Name;
-    }
 }

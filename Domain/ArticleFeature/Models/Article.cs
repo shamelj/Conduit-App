@@ -1,12 +1,11 @@
 ﻿using System.Text.RegularExpressions;
+using Domain.ArticleFeature.Services;
 using Domain.Shared;
 
 namespace Domain.ArticleFeature.Models;
 
-public class Article : IBaseModel<string>
+public class Article
 {
-    public string Username { get; set; }
-
     public string Slug
     {
         get
@@ -22,14 +21,13 @@ public class Article : IBaseModel<string>
         }
     }
 
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string Body { get; set; } = string.Empty;
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public string Body { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public string GetId()
-    {
-        return Slug;
-    }
+    public IEnumerable<string>? TagList { get; set; }
+    public string Username { get; set; }
+    
 }

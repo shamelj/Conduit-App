@@ -2,6 +2,7 @@ using System.Net;
 using Domain.ArticleFeature.Services;
 using Domain.CommentFeature.Models;
 using Domain.Exceptions;
+using Domain.Shared;
 using Domain.UserFeature.Services;
 
 namespace Domain.CommentFeature.Services;
@@ -11,17 +12,19 @@ public class CommentService : ICommentService
     private readonly ICommentRepository _commentRepository;
     private readonly IUserRepository _userRepository;
     private readonly IArticleRepository _articleRepository;
+    private IUnitOfWork _unitOfWork;
 
     public CommentService(ICommentRepository commentRepository,
         IUserRepository userRepository,
-        IArticleRepository articleRepository)
+        IArticleRepository articleRepository, IUnitOfWork unitOfWork)
     {
         _commentRepository = commentRepository;
         _userRepository = userRepository;
         _articleRepository = articleRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task Create(Comment comment)
+    public async Task CreateAsync(Comment comment)
     {
         if (comment.Id == null)
             throw new ConduitException
@@ -29,14 +32,18 @@ public class CommentService : ICommentService
         if (!await _userRepository.ExistsByUsername(comment.Username))
             throw new ConduitException
                 { Message = "No such username, make sure you're logged in", StatusCode = HttpStatusCode.BadRequest };
-        if (!await _articleRepository.ExistsBySlug(comment.ArticleSlug))
+        if (!await _articleRepository.ExistsBySlugAsync(comment.ArticleSlug))
             throw new ConduitException
                 { Message = "No article with such Slug", StatusCode = HttpStatusCode.BadRequest };
-        _commentRepository.Create(comment);
+        _commentRepository.CreateAsync(comment);
+        await _unitOfWork.SaveChangesAsync();
+
     }
 
-    public async Task DeleteById(long id)
+    public async Task DeleteByIdAsync(long id)
     { 
-        await _commentRepository.DeleteById(id);
+        await _commentRepository.DeleteByIdAsync(id);
+        await _unitOfWork.SaveChangesAsync();
+
     }
 }

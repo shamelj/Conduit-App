@@ -5,6 +5,6 @@ namespace Domain.TagFeature.Services;
 
 public interface ITagService
 {
-    void Upsert(Tag tag);
+    Task Upsert(Tag tag);
     Task<IEnumerable<Tag>> List();
 }

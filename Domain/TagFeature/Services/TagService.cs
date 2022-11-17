@@ -6,15 +6,19 @@ namespace Domain.TagFeature.Services;
 public class TagService : ITagService
 {
     private readonly ITagRepository _tagRepository;
+    private IUnitOfWork _unitOfWork;
 
-    public TagService(ITagRepository tagRepository)
+    public TagService(ITagRepository tagRepository, IUnitOfWork unitOfWork)
     {
         _tagRepository = tagRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    public void Upsert(Tag tag)
+    public async Task Upsert(Tag tag)
     {
-        _tagRepository.Upsert(tag);
+        await _tagRepository.Upsert(tag);
+        await _unitOfWork.SaveChangesAsync();
+
     }
 
     public async Task<IEnumerable<Tag>> List()

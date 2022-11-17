@@ -15,7 +15,7 @@ public class UserFollowUserEntity
     public UserEntity? Follower { get; set; }
     public UserEntity? Followed { get; set; }
 
-    public long? FollowerId { get; set; }
-    public long? FollowedId { get; set; }
-    
+    [Required] public long? FollowerId { get; set; }
+
+    [Required] public long? FollowedId { get; set; }
 }

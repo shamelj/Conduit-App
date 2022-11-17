@@ -5,7 +5,7 @@ namespace Domain.CommentFeature.Services;
 
 public interface ICommentService
 {
-    Task Create(Comment comment);
-    Task DeleteById(long id);
+    Task CreateAsync(Comment comment);
+    Task DeleteByIdAsync(long id);
 
 }

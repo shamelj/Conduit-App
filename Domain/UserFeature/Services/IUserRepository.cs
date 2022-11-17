@@ -10,4 +10,7 @@ public interface IUserRepository
     Task<User?> GetByUsername(string username);
     Task<bool> ExistsByUsername(string username);
     Task<bool> ExistsByEmail(string email);
+    Task<bool> IsFollowing(string follower, string followed);
+    Task FollowUser(string followerUsername, string followedUsername);
+    Task UnfollowUser(string followerUsername, string followedUsername);
 }

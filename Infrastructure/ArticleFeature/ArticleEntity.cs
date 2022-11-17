@@ -16,15 +16,12 @@ public class ArticleEntity
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    private string _slug;
     private string _title;
+    private string _slug;
 
     public string Slug
     {
-        get
-        {
-            return _slug;
-        }
+        get => _slug;
         private set
         {
             value = value
@@ -56,4 +53,6 @@ public class ArticleEntity
     public IEnumerable<TagEntity> Tags { get; set; }
     public IEnumerable<CommentEntity> Comments { get; set; }
     public UserEntity Author { get; set; }
+
+    public long AuthorId { get; set; }
 }

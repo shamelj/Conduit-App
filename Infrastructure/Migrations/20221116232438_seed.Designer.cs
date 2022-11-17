@@ -4,6 +4,7 @@ using Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ConduitDbContext))]
-    partial class ConduitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221116232438_seed")]
+    partial class seed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,11 +306,9 @@ namespace Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("FollowedId")
-                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.Property<long?>("FollowerId")
-                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -315,7 +316,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("FollowedId");
 
                     b.HasIndex("FollowerId", "FollowedId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[FollowerId] IS NOT NULL AND [FollowedId] IS NOT NULL");
 
                     b.ToTable("UserFollowUser");
                 });
@@ -384,15 +386,11 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Infrastructure.UserFeature.UserEntity", "Followed")
                         .WithMany("UserFollowedByUsers")
-                        .HasForeignKey("FollowedId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FollowedId");
 
                     b.HasOne("Infrastructure.UserFeature.UserEntity", "Follower")
                         .WithMany("UserFollowsUsers")
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FollowerId");
 
                     b.Navigation("Followed");
 

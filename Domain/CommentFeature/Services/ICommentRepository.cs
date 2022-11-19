@@ -5,7 +5,8 @@ namespace Domain.CommentFeature.Services;
 
 public interface ICommentRepository
 {
-    void CreateAsync(Comment comment);
-    Task DeleteByIdAsync(long id);
+    Task<long> CreateAsync(Comment comment);
+    void DeleteByIdAsync(long id);
     Task<IEnumerable<Comment>> ListCommentsAsync(string slug);
+    Task<Comment?> GetCommentAsync(long id);
 }

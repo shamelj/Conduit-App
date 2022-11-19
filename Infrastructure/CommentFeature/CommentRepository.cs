@@ -23,37 +23,52 @@ public class CommentRepository : ICommentRepository
         _dbSet = context.Set<CommentEntity>();
     }
 
-    public void CreateAsync(Comment comment)
+    public async Task<long> CreateAsync(Comment comment)
     {
-        var commentEntity = ToCommentEntity(comment);
+        var commentEntity = await ToCommentEntityAsync(comment);
+        var dateNow = DateTime.Now;
+        commentEntity.CreatedAt = dateNow;
+        commentEntity.UpdatedAt = dateNow;
         _dbSet.Add(commentEntity);
+        await _context.SaveChangesAsync();
+        return commentEntity.Id;
     }
 
-    public async Task DeleteByIdAsync(long id)
+    public void DeleteByIdAsync(long id)
     {
-        var comment = await _dbSet.SingleOrDefaultAsync(entity => entity.Id.Equals(id));
+        var comment = new CommentEntity() { Id = id };
         _context.Entry(comment).State = EntityState.Deleted;
     }
 
-    private CommentEntity ToCommentEntity(Comment comment)
-    {
-        var commentEntity = comment.Adapt<CommentEntity>();
-        var author = _userDbSet.Single(user => user.Username.Equals(comment.Username));
-        var article = _articleDbSet.Single(article => article.Slug.Equals(comment.ArticleSlug));
-        commentEntity.Article = article;
-        commentEntity.Author = author;
-        var dateNow = DateTime.Now;
-        commentEntity.CreatedAt = dateNow ;
-        commentEntity.UpdatedAt = dateNow;
-        return commentEntity;
-    }
 
     public async Task<IEnumerable<Comment>> ListCommentsAsync(string slug)
     {
-        var comments = (await _articleDbSet.Include(entity => entity.Comments)
-                .SingleOrDefaultAsync(entity => entity.Slug.Equals(slug)))?
-            .Comments
-            .Select(entity => entity.Adapt<Comment>());
-        return comments ?? Enumerable.Empty<Comment>();
+        var comments = await _dbSet
+            .Include(comment => comment.Article)
+            .Include(comment => comment.Author)
+            .Where(comment => comment.Article.Slug.Equals(slug))
+            .OrderByDescending(comment => comment.CreatedAt)
+            .Select(commentEntity => commentEntity.Adapt<Comment>())
+            .ToListAsync();
+        return comments;
+    }
+
+    public async Task<Comment?> GetCommentAsync(long id)
+    {
+        var commentEntity = await _dbSet
+            .Include(comment => comment.Article)
+            .Include(comment => comment.Author)
+            .SingleOrDefaultAsync(comment => comment.Id.Equals(id));
+        return commentEntity?.Adapt<Comment>();
+    }
+
+    private async Task<CommentEntity> ToCommentEntityAsync(Comment comment)
+    {
+        var commentEntity = comment.Adapt<CommentEntity>();
+        var author = await _userDbSet.SingleAsync(user => user.Username.Equals(comment.Username));
+        var article = await _articleDbSet.SingleAsync(article => article.Slug.Equals(comment.ArticleSlug));
+        commentEntity.Article = article;
+        commentEntity.Author = author;
+        return commentEntity;
     }
 }

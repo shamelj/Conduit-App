@@ -23,7 +23,7 @@ public class UserAppService : IUserAppService
         await _userService.Update(username, user.Adapt<User>());
     }
 
-    public async Task<ProfileResponse> GetProfileByUsername(string profileUsername, string? authenticatedUsername = null)
+    public async Task<ProfileResponse> GetProfileByUsernameAsync(string profileUsername, string? authenticatedUsername = null)
     {
         var user = await _userService.GetByUsername(profileUsername);
         var profile = user.Adapt<ProfileResponse>();

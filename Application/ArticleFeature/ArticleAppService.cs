@@ -57,7 +57,7 @@ public class ArticleAppService : IArticleAppService
     private async Task<ArticleResponse> ToArticleResponse(string favoritedByUser, Article article)
     {
         var articleResponse = article.Adapt<ArticleResponse>();
-        articleResponse.Author = await _userAppService.GetProfileByUsername(article.AuthorUsername, favoritedByUser);
+        articleResponse.Author = await _userAppService.GetProfileByUsernameAsync(article.AuthorUsername, favoritedByUser);
         articleResponse.Favorited = await _articleService.FavoritedByUser(article.Slug ,favoritedByUser);
         articleResponse.FavoritesCount = await _articleService.CountFavorites(article.Slug);
         return articleResponse;

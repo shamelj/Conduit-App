@@ -64,7 +64,7 @@ public class ArticleController : ControllerBase
         return Ok(new { articles = articles, count = articles.Count() });
     }
 
-    [HttpGet("/{slug}")]
+    [HttpGet("{slug}")]
     public async Task<IActionResult> GetArticle([FromRoute] string slug)
     {
         var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
@@ -82,7 +82,7 @@ public class ArticleController : ControllerBase
     }
     
     // todo authorize that user has the updated article
-    [HttpPut("/{slug}")]
+    [HttpPut("{slug}")]
     public async Task<IActionResult> UpdateArticle([FromRoute] string slug, [FromBody] ArticleUpdateRequest articleRequest)
     {
         var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
@@ -92,7 +92,7 @@ public class ArticleController : ControllerBase
     }
     
     // todo authorize that user has the deleted article
-    [HttpDelete("/{slug}")]
+    [HttpDelete("{slug}")]
     public async Task<IActionResult> DeleteArticle([FromRoute] string slug)
     {
         await _articleService.DeleteArticleAsync(slug);

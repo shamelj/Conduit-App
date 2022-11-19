@@ -1,5 +1,7 @@
 ﻿using Domain.ArticleFeature.Models;
+using Domain.CommentFeature.Models;
 using Infrastructure.ArticleFeature;
+using Infrastructure.CommentFeature;
 using Mapster;
 
 namespace WebAPI.Configurations;
@@ -19,6 +21,11 @@ public static class MapsterConfig
             .Ignore(entity => entity.AuthorId)
             .Ignore(entity => entity.Author)
             .IgnoreNullValues(true);
+
+        TypeAdapterConfig<CommentEntity, Comment>
+            .NewConfig()
+            .Map(comment => comment.Username, commentEntity => commentEntity.Author!.Username)
+            .Map(comment => comment.ArticleSlug, commentEntity => commentEntity.Article.Slug);
     }
     
 }

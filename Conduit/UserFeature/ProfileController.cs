@@ -19,7 +19,7 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> GetProfile([FromRoute] string username)
     {
         var authenticatedUsername = User.FindFirstValue("Username");
-        var profile = await _userService.GetProfileByUsername(username,authenticatedUsername);
+        var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });
     }
     
@@ -28,7 +28,7 @@ public class ProfileController : ControllerBase
     {
         var authenticatedUsername = User.FindFirstValue("Username");
         await _userService.FollowUser(authenticatedUsername,username);
-        var profile = await _userService.GetProfileByUsername(username,authenticatedUsername);
+        var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });
     }
     [HttpDelete("{username}/follow")]
@@ -36,7 +36,7 @@ public class ProfileController : ControllerBase
     {
         var authenticatedUsername = User.FindFirstValue("Username");
         await _userService.UnfollowUser(authenticatedUsername,username);
-        var profile = await _userService.GetProfileByUsername(username,authenticatedUsername);
+        var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });
     }
 }

@@ -12,7 +12,7 @@ namespace WebAPI.ArticleFeature;
 [ConduitExceptionHandlerFilter]
 public class ArticleController : ControllerBase
 {
-    private static readonly string testUsername = "shamel";
+    private const string testUsername = "shamel";
     private readonly IArticleAppService _articleService;
 
     public ArticleController(IArticleAppService articleService)
@@ -98,6 +98,28 @@ public class ArticleController : ControllerBase
         await _articleService.DeleteArticleAsync(slug);
         return NoContent();
     }
+    
+    // todo authenticate user
+    [HttpPost("{slug}/favorite")]
+    public async Task<IActionResult> FavoriteArticle([FromRoute] string slug)
+    {
+        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        await _articleService.FavoriteArticleAsync(slug, authenticatedUsername);
+        var article = await _articleService.GetArticleBySlug(authenticatedUsername, slug);
+        return Ok(new { article });
+    }
+    
+    // todo authenticate user
+    [HttpDelete("{slug}/favorite")]
+    public async Task<IActionResult> UnfavoriteArticle([FromRoute] string slug)
+    {
+        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        await _articleService.UnfavoriteArticleAsync(slug, authenticatedUsername);
+        var article = await _articleService.GetArticleBySlug(authenticatedUsername, slug);
+        return Ok(new { article });
+    }
+
+    
     
     
 }

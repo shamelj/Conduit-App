@@ -9,6 +9,7 @@ namespace WebAPI.UserFeature;
 [ConduitExceptionHandlerFilter]
 public class ProfileController : ControllerBase
 {
+    private const string testUsername = "shamel";
     private readonly IUserAppService _userService;
     public ProfileController(IUserAppService userService)
     {
@@ -18,15 +19,15 @@ public class ProfileController : ControllerBase
     [HttpGet("{username}")]
     public async Task<IActionResult> GetProfile([FromRoute] string username)
     {
-        var authenticatedUsername = User.FindFirstValue("Username");
+        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
         var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });
     }
     
-    [HttpGet("{username}/follow")]
+    [HttpPost("{username}/follow")]
     public async Task<IActionResult> FollowProfile([FromRoute] string username)
     {
-        var authenticatedUsername = User.FindFirstValue("Username");
+        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
         await _userService.FollowUser(authenticatedUsername,username);
         var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });
@@ -34,7 +35,7 @@ public class ProfileController : ControllerBase
     [HttpDelete("{username}/follow")]
     public async Task<IActionResult> UnfollowProfile([FromRoute] string username)
     {
-        var authenticatedUsername = User.FindFirstValue("Username");
+        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
         await _userService.UnfollowUser(authenticatedUsername,username);
         var profile = await _userService.GetProfileByUsernameAsync(username,authenticatedUsername);
         return Ok(new { Profile = profile });

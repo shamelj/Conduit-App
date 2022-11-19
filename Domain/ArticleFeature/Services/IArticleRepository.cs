@@ -15,4 +15,6 @@ public interface IArticleRepository
     Task<IEnumerable<Article>> ListArticlesAsync(ListArticlesRequestParams requestParams);
     Task<bool> FavoritedByUser(string slug, string username);
     Task<int> CountFavorites(string slug);
+    Task FavoriteArticleAsync(string slug, string followingUsername);
+    Task UnfavoriteArticleAsync(string slug, string followingUsername);
 }

@@ -12,4 +12,6 @@ public interface IArticleAppService
     Task UpdateArticle(ArticleUpdateRequest articleRequest, string slug);
 
     Task DeleteArticleAsync(string slug);
+    Task FavoriteArticleAsync(string slug, string followingUsername);
+    Task UnfavoriteArticleAsync(string slug, string followingUsername);
 }

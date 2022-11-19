@@ -150,5 +150,27 @@ public class ArticleRepository : IArticleRepository
         return await _favouritedArticlesDbSet.CountAsync(favArticle => favArticle.Article.Slug.Equals(slug));
     }
 
-    
+    public async Task FavoriteArticleAsync(string slug, string followingUsername)
+    {
+        var user = await _userDbSet.SingleOrDefaultAsync(user => user.Username.Equals(followingUsername));
+        var article = await _dbSet.SingleOrDefaultAsync(article => article.Slug.Equals(slug));
+        var userFavArticle = new UserFavouriteArticleEntity()
+        {
+            User = user,
+            Article = article
+        };
+        _favouritedArticlesDbSet.Add(userFavArticle);
+    }
+
+    public async Task UnfavoriteArticleAsync(string slug, string followingUsername)
+    {
+        var userFavArticle = await _favouritedArticlesDbSet
+            .Include(userArticle => userArticle.Article)
+            .Include(userArticle => userArticle.User)
+            .Where(userArticle => userArticle.Article.Slug.Equals(slug))
+            .Where(userArticle => userArticle.User.Username.Equals(followingUsername))
+            .SingleOrDefaultAsync();
+        
+        if (userFavArticle != null) _favouritedArticlesDbSet.Remove(userFavArticle);
+    }
 }

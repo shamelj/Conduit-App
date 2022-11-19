@@ -2,18 +2,23 @@ using System.Net;
 using Domain.ArticleFeature.Models;
 using Domain.Exceptions;
 using Domain.Shared;
+using Domain.UserFeature.Services;
 
 namespace Domain.ArticleFeature.Services;
 
 public class ArticleService : IArticleService
 {
     private readonly IArticleRepository _articleRepository;
+    
+    private readonly IUserRepository _userRepository;
+
     private readonly IUnitOfWork _unitOfWork;
 
-    public ArticleService(IArticleRepository articleRepository, IUnitOfWork unitOfWork)
+    public ArticleService(IArticleRepository articleRepository, IUnitOfWork unitOfWork, IUserRepository userRepository)
     {
         _articleRepository = articleRepository;
         _unitOfWork = unitOfWork;
+        _userRepository = userRepository;
     }
 
     public async Task CreateAsync(Article article)
@@ -67,5 +72,31 @@ public class ArticleService : IArticleService
     public async Task<int> CountFavorites(string slug)
     {
         return await _articleRepository.CountFavorites(slug);
+    }
+
+    public async Task FavoriteArticleAsync(string slug, string followingUsername)
+    {
+        if (!await _articleRepository.ExistsBySlugAsync(slug))
+            throw new ConduitException
+                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+        if (!await _userRepository.ExistsByUsername(followingUsername))
+            throw new ConduitException
+                { Message = "No such username", StatusCode = HttpStatusCode.NotFound };
+        if (await _articleRepository.FavoritedByUser(slug, followingUsername))
+            return;
+        await _articleRepository.FavoriteArticleAsync(slug, followingUsername);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task UnfavoriteArticleAsync(string slug, string followingUsername)
+    {
+        if (!await _articleRepository.ExistsBySlugAsync(slug))
+            throw new ConduitException
+                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+        if (!await _userRepository.ExistsByUsername(followingUsername))
+            throw new ConduitException
+                { Message = "No such username", StatusCode = HttpStatusCode.NotFound };
+        await _articleRepository.UnfavoriteArticleAsync(slug, followingUsername);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

@@ -54,6 +54,16 @@ public class ArticleAppService : IArticleAppService
         await _articleService.DeleteBySlugAsync(slug);
     }
 
+    public async Task FavoriteArticleAsync(string slug, string followingUsername)
+    {
+        await _articleService.FavoriteArticleAsync(slug, followingUsername);
+    }
+
+    public async Task UnfavoriteArticleAsync(string slug, string followingUsername)
+    {
+        await _articleService.UnfavoriteArticleAsync(slug, followingUsername);
+    }
+
     private async Task<ArticleResponse> ToArticleResponse(string favoritedByUser, Article article)
     {
         var articleResponse = article.Adapt<ArticleResponse>();

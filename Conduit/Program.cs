@@ -1,5 +1,6 @@
 using Application.ArticleFeature;
 using Application.CommentFeature;
+using Application.TagFeature;
 using Application.UserFeature;
 using Domain.ArticleFeature.Services;
 using Domain.CommentFeature.Services;
@@ -48,6 +49,8 @@ builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IUserAppService, UserAppService>();
 builder.Services.AddScoped<IArticleAppService, ArticleAppService>();
 builder.Services.AddScoped<ICommentAppService, CommentAppService>();
+builder.Services.AddScoped<ITagAppService, TagAppService>();
+
 
 
 //validation

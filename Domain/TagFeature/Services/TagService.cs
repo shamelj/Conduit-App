@@ -21,8 +21,8 @@ public class TagService : ITagService
 
     }
 
-    public async Task<IEnumerable<Tag>> List()
+    public async Task<IEnumerable<Tag>> ListAsync()
     {
-        return await _tagRepository.List();
+        return await _tagRepository.ListAsync();
     }
 }

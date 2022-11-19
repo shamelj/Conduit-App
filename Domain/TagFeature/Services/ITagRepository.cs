@@ -6,6 +6,6 @@ namespace Domain.TagFeature.Services;
 public interface ITagRepository
 {
     Task Upsert(Tag tag);
-    Task<IEnumerable<Tag>> List();
+    Task<IEnumerable<Tag>> ListAsync();
     Task<IEnumerable<Tag>> ListByArticleSlugAsync(string slug);
 }

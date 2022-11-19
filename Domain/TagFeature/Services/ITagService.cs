@@ -6,5 +6,5 @@ namespace Domain.TagFeature.Services;
 public interface ITagService
 {
     Task Upsert(Tag tag);
-    Task<IEnumerable<Tag>> List();
+    Task<IEnumerable<Tag>> ListAsync();
 }

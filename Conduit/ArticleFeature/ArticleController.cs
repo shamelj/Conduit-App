@@ -34,7 +34,7 @@ public class ArticleController : ControllerBase
                 favoritedUsername: favoritedUsername, limit: limit, offset: offset);
         var articles = await _articleService.ListArticlesAsync(authenticatedUsername, listArticlesRequestParams);
         var articleResponses = articles.ToList();
-        return Ok(new { articles = articleResponses, count = articleResponses.Count() });
+        return Ok(new { Articles = articleResponses, ArticlesCount = articleResponses.Count() });
     }
 
     private ListArticlesRequestParams CreateArticleRequestParams(string? feedForUser = "", string? authorUsername = "",
@@ -52,7 +52,7 @@ public class ArticleController : ControllerBase
         };
     }
 
-    [HttpGet("/feed")]
+    [HttpGet("feed")]
     public async Task<IActionResult> ListFeed(
         [FromQuery(Name = "limit")] int limit = 20,
         [FromQuery(Name = "offset")] int offset = 0)
@@ -61,7 +61,7 @@ public class ArticleController : ControllerBase
         var listArticlesRequestParams =
             CreateArticleRequestParams(authenticatedUsername, limit: limit, offset: offset);
         var articles = (await _articleService.ListArticlesAsync(authenticatedUsername, listArticlesRequestParams)).ToList();
-        return Ok(new { articles = articles, count = articles.Count() });
+        return Ok(new { Articles = articles, ArticlesCount = articles.Count() });
     }
 
     [HttpGet("{slug}")]
@@ -73,21 +73,21 @@ public class ArticleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateArticle([FromBody] ArticleRequest articleRequest)
+    public async Task<IActionResult> CreateArticle([FromBody] HttpArticleRequest articleRequest)
     {
         var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        await _articleService.CreateArticle(articleRequest, authenticatedUsername);
-        var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Slug);
+        await _articleService.CreateArticle(articleRequest.Article, authenticatedUsername);
+        var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Article.Slug);
         return Ok(new { article });
     }
     
     // todo authorize that user has the updated article
     [HttpPut("{slug}")]
-    public async Task<IActionResult> UpdateArticle([FromRoute] string slug, [FromBody] ArticleUpdateRequest articleRequest)
+    public async Task<IActionResult> UpdateArticle([FromRoute] string slug, [FromBody] HttpArticleUpdateRequest articleRequest)
     {
         var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        await _articleService.UpdateArticle(articleRequest, slug);
-        var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Slug ?? slug);
+        await _articleService.UpdateArticle(articleRequest.Article, slug);
+        var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Article.Slug ?? slug);
         return Ok(new { article });
     }
     
@@ -119,7 +119,14 @@ public class ArticleController : ControllerBase
         return Ok(new { article });
     }
 
-    
-    
-    
+
+    public class HttpArticleRequest
+    {
+        public ArticleRequest Article { get; set; }
+    }
+
+    public class HttpArticleUpdateRequest
+    {
+        public ArticleUpdateRequest Article { get; set; }
+    }
 }

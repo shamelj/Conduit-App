@@ -25,7 +25,7 @@ public class TagRepository : ITagRepository
             _dbSet.Add(tag.Adapt<TagEntity>());
     }
 
-    public async Task<IEnumerable<Tag>> List()
+    public async Task<IEnumerable<Tag>> ListAsync()
     {
         return await _dbSet
             .Select(entity => entity.Adapt<Tag>())

@@ -3,6 +3,11 @@ using Domain.Shared;
 
 namespace Domain.CommentFeature.Services;
 
-public interface ICommentService : IService<Comment, long>
+public interface ICommentService
 {
+    Task<long> CreateAsync(Comment comment);
+    Task DeleteByIdAsync(long id);
+
+    Task<Comment> GetComment(long id);
+    Task<IEnumerable<Comment>> GetCommentsAsync(string slug);
 }

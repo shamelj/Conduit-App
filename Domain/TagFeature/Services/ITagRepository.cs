@@ -3,6 +3,9 @@ using Domain.TagFeature.Models;
 
 namespace Domain.TagFeature.Services;
 
-public interface ITagRepository : IRepository<Tag, string>
+public interface ITagRepository
 {
+    Task Upsert(Tag tag);
+    Task<IEnumerable<Tag>> ListAsync();
+    Task<IEnumerable<Tag>> ListByArticleSlugAsync(string slug);
 }

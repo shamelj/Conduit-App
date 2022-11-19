@@ -1,35 +1,48 @@
 ﻿using System.Text.RegularExpressions;
+using Domain.ArticleFeature.Services;
 using Domain.Shared;
 
 namespace Domain.ArticleFeature.Models;
 
-public class Article : IBaseModel<string>
+public class Article
 {
-    public string Username { get; set; }
+    private string? _title;
+    private string? _slug;
 
     public string Slug
     {
-        get
+        get => _slug;
+        private set
         {
-            var value = Title
-                .ToLower()
-                .Trim()
-                .Replace(' ', '-');
+            if (value != null)
+            {
+                value = value
+                    .ToLower()
+                    .Trim()
+                    .Replace(' ', '-');
 
-            // Replace all subsequent dashes with a single dash
-            value = Regex.Replace(value, @"[-]{2,}", "-");
-            return value;
+                // Replace all subsequent dashes with a single dash
+                value = Regex.Replace(value, @"[-]{2,}", "-");
+                _slug = value;
+            }
         }
     }
 
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string Body { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-
-    public string GetId()
+    public string Title
     {
-        return Slug;
+        get => _title;
+        set
+        {
+            _title = value;
+            Slug = value;
+        }
     }
+    public string Description { get; set; }
+    public string Body { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+
+    public IEnumerable<string>? TagList { get; set; }
+    public string AuthorUsername { get; set; }
+    
 }

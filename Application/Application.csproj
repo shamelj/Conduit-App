@@ -11,10 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ArticleFeature" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.3.0" />
       <PackageReference Include="Mapster" Version="7.4.0-pre03" />
     </ItemGroup>
 

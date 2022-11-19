@@ -11,12 +11,16 @@ public class ConduitExceptionHandlerFilter : ExceptionFilterAttribute
     {
         if (context.Exception is ConduitException exception)
         {
-            context.Result = new ObjectResult(exception.Message)
+            context.Result = new ObjectResult(new {exception.Message})
             {
                 StatusCode = (int?)exception.StatusCode
             };
 
             context.ExceptionHandled = true;
+        }
+        else
+        {
+            base.OnException(context);
         }
     }
 }

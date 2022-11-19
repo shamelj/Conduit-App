@@ -6,10 +6,10 @@ using WebAPI.Filters;
 namespace WebAPI.UserFeature;
 [Route("/api/profiles")]
 [ApiController]
+[ConduitExceptionHandlerFilter]
 public class ProfileController : ControllerBase
 {
     private readonly IUserAppService _userService;
-    // GET
     public ProfileController(IUserAppService userService)
     {
         _userService = userService;

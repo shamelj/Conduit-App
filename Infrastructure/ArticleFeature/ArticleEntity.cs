@@ -16,14 +16,16 @@ public class ArticleEntity
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public long Id { get; set; }
 
-    private string _title;
-    private string _slug;
+    private string? _title;
+    private string? _slug;
 
     public string Slug
     {
         get => _slug;
         private set
         {
+            if (value != null)
+            {
             value = value
                 .ToLower()
                 .Trim()
@@ -32,6 +34,7 @@ public class ArticleEntity
             // Replace all subsequent dashes with a single dash
             value = Regex.Replace(value, @"[-]{2,}", "-");
             _slug = value;
+            }
         }
     }
 
@@ -47,12 +50,14 @@ public class ArticleEntity
 
     public string Description { get; set; }
     public string Body { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
     public IEnumerable<TagEntity> Tags { get; set; }
     public IEnumerable<CommentEntity> Comments { get; set; }
     public UserEntity Author { get; set; }
+
+    public List<UserFavouriteArticleEntity> UserFavouriteArticles { get; set; }
 
     public long AuthorId { get; set; }
 }

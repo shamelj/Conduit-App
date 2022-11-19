@@ -1,12 +1,10 @@
 ﻿using System.Text.RegularExpressions;
-using Domain.ArticleFeature.Services;
-using Domain.Shared;
 
-namespace Domain.ArticleFeature.Models;
+namespace Application.ArticleFeature;
 
-public class Article
+public class ArticleUpdateRequest
 {
-    public string Slug
+    public string? Slug
     {
         get
         {
@@ -25,12 +23,7 @@ public class Article
     }
 
     public string? Title { get; set; }
-    public string Description { get; set; }
-    public string Body { get; set; }
-    public DateTime? CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-
+    public string? Description { get; set; }
+    public string? Body { get; set; }
     public IEnumerable<string>? TagList { get; set; }
-    public string AuthorUsername { get; set; }
-    
 }

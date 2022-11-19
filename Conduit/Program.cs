@@ -1,15 +1,19 @@
+using Application.ArticleFeature;
 using Application.UserFeature;
 using Domain.ArticleFeature.Services;
 using Domain.CommentFeature.Services;
 using Domain.Shared;
 using Domain.TagFeature.Services;
 using Domain.UserFeature.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.ArticleFeature;
 using Infrastructure.CommentFeature;
 using Infrastructure.Shared;
 using Infrastructure.TagFeature;
 using Infrastructure.UserFeature;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Configurations;
 using WebAPI.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ModelStateFilter>();
-    options.Filters.Add<ConduitExceptionHandlerFilter>();
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +45,14 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 // application services
 builder.Services.AddScoped<IUserAppService, UserAppService>();
+builder.Services.AddScoped<IArticleAppService, ArticleAppService>();
+
+//validation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddScoped<IValidator<ArticleRequest>, ArticleRequestValidator>();
+
+// mapster config
+builder.Services.AddMapsterConfiguration();
 
 var app = builder.Build();
 

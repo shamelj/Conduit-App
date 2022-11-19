@@ -42,7 +42,9 @@ public class CommentRepository : ICommentRepository
         var article = _articleDbSet.Single(article => article.Slug.Equals(comment.ArticleSlug));
         commentEntity.Article = article;
         commentEntity.Author = author;
-        commentEntity.CreatedAt = DateTime.Now;
+        var dateNow = DateTime.Now;
+        commentEntity.CreatedAt = dateNow ;
+        commentEntity.UpdatedAt = dateNow;
         return commentEntity;
     }
 

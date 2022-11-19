@@ -37,8 +37,7 @@ public class ArticleService : IArticleService
         if (!await _articleRepository.ExistsBySlugAsync(originalSlug))
             throw new ConduitException
                 { Message = "No such slug to update", StatusCode = HttpStatusCode.NotFound };
-        var hasUniqueId = !await _articleRepository.ExistsBySlugAsync(article.Slug) ||
-                          originalSlug.Equals(article.Slug);
+        var hasUniqueId = originalSlug.Equals(article.Slug) || !await _articleRepository.ExistsBySlugAsync(article.Slug);
         if (!hasUniqueId)
             throw new ConduitException
                 { Message = "Entered duplicated title/slug", StatusCode = HttpStatusCode.BadRequest };
@@ -50,5 +49,23 @@ public class ArticleService : IArticleService
     {
         await _articleRepository.DeleteBySlugAsync(slug);
         await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Article>> ListArticlesAsync(ListArticlesRequestParams requestParams)
+    {
+        return await _articleRepository.ListArticlesAsync(requestParams);
+    }
+
+    public async Task<bool> FavoritedByUser(string slug, string username)
+    {
+        if (!await _articleRepository.ExistsBySlugAsync(slug))
+            throw new ConduitException
+                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+        return await _articleRepository.FavoritedByUser(slug, username);
+    }
+
+    public async Task<int> CountFavorites(string slug)
+    {
+        return await _articleRepository.CountFavorites(slug);
     }
 }

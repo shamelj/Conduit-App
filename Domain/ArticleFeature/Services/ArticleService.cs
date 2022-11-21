@@ -33,7 +33,7 @@ public class ArticleService : IArticleService
     public async Task<Article> GetBySlugAsync(string slug)
     {
         var article = await _articleRepository.GetBySlugAsync(slug) ?? throw new ConduitException
-            { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+            { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
         return article;
     }
 
@@ -41,7 +41,7 @@ public class ArticleService : IArticleService
     {
         if (!await _articleRepository.ExistsBySlugAsync(originalSlug))
             throw new ConduitException
-                { Message = "No such slug to update", StatusCode = HttpStatusCode.NotFound };
+                { Message = "No such article to update", StatusCode = HttpStatusCode.NotFound };
         var hasUniqueId = originalSlug.Equals(article.Slug) || !await _articleRepository.ExistsBySlugAsync(article.Slug);
         if (!hasUniqueId)
             throw new ConduitException
@@ -65,7 +65,7 @@ public class ArticleService : IArticleService
     {
         if (!await _articleRepository.ExistsBySlugAsync(slug))
             throw new ConduitException
-                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
         return await _articleRepository.FavoritedByUser(slug, username);
     }
 
@@ -78,7 +78,7 @@ public class ArticleService : IArticleService
     {
         if (!await _articleRepository.ExistsBySlugAsync(slug))
             throw new ConduitException
-                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
         if (!await _userRepository.ExistsByUsername(followingUsername))
             throw new ConduitException
                 { Message = "No such username", StatusCode = HttpStatusCode.NotFound };
@@ -92,7 +92,7 @@ public class ArticleService : IArticleService
     {
         if (!await _articleRepository.ExistsBySlugAsync(slug))
             throw new ConduitException
-                { Message = "No such slug", StatusCode = HttpStatusCode.NotFound };
+                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
         if (!await _userRepository.ExistsByUsername(followingUsername))
             throw new ConduitException
                 { Message = "No such username", StatusCode = HttpStatusCode.NotFound };

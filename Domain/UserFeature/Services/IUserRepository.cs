@@ -13,4 +13,7 @@ public interface IUserRepository
     Task<bool> IsFollowing(string follower, string followed);
     Task FollowUser(string followerUsername, string followedUsername);
     Task UnfollowUser(string followerUsername, string followedUsername);
+    Task<User?> GetByEmail(string email);
+    Task<bool> UserHasArticleAsync(string username, string slug);
+    Task<bool> UserHasCommentAsync(string username, long commentId);
 }

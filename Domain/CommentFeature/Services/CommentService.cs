@@ -46,7 +46,7 @@ public class CommentService : ICommentService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async Task<Comment> GetComment(long id)
+    public async Task<Comment> GetCommentAsync(long id)
     {
         var comment = await _commentRepository.GetCommentAsync(id) ?? throw new ConduitException
             { Message = "No comment with such id", StatusCode = HttpStatusCode.NotFound };

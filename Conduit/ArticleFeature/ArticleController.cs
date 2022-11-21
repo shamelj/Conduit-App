@@ -1,7 +1,8 @@
-﻿using System.Security.Claims;
-using Application.ArticleFeature;
+﻿using Application.ArticleFeature;
+using Application.Authentication;
+using Application.Authentication.Requirements;
 using Domain.ArticleFeature.Models;
-using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Filters;
 
@@ -12,12 +13,13 @@ namespace WebAPI.ArticleFeature;
 [ConduitExceptionHandlerFilter]
 public class ArticleController : ControllerBase
 {
-    private const string testUsername = "shamel";
     private readonly IArticleAppService _articleService;
+    private readonly IAuthorizationService _authorizationService;
 
-    public ArticleController(IArticleAppService articleService)
+    public ArticleController(IArticleAppService articleService, IAuthorizationService authenticationService)
     {
         _articleService = articleService;
+        _authorizationService = authenticationService;
     }
 
     [HttpGet]
@@ -28,8 +30,7 @@ public class ArticleController : ControllerBase
         [FromQuery(Name = "limit")] int limit = 20,
         [FromQuery(Name = "offset")] int offset = 0)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        var listArticlesRequestParams =
+        var authenticatedUsername = User.Identity?.Name;        var listArticlesRequestParams =
             CreateArticleRequestParams(authorUsername: authorUsername, tagName: tagName,
                 favoritedUsername: favoritedUsername, limit: limit, offset: offset);
         var articles = await _articleService.ListArticlesAsync(authenticatedUsername, listArticlesRequestParams);
@@ -53,67 +54,84 @@ public class ArticleController : ControllerBase
     }
 
     [HttpGet("feed")]
+    [Authorize]
     public async Task<IActionResult> ListFeed(
         [FromQuery(Name = "limit")] int limit = 20,
         [FromQuery(Name = "offset")] int offset = 0)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        var listArticlesRequestParams =
+        var authenticatedUsername = User.Identity?.Name;        var listArticlesRequestParams =
             CreateArticleRequestParams(authenticatedUsername, limit: limit, offset: offset);
-        var articles = (await _articleService.ListArticlesAsync(authenticatedUsername, listArticlesRequestParams)).ToList();
+        var articles = (await _articleService.ListArticlesAsync(authenticatedUsername, listArticlesRequestParams))
+            .ToList();
         return Ok(new { Articles = articles, ArticlesCount = articles.Count() });
     }
 
     [HttpGet("{slug}")]
     public async Task<IActionResult> GetArticle([FromRoute] string slug)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        var authenticatedUsername = User.Identity?.Name;
         var article = await _articleService.GetArticleBySlug(authenticatedUsername, slug);
         return Ok(new { article });
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateArticle([FromBody] HttpArticleRequest articleRequest)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        var authenticatedUsername = User.Identity?.Name;
         await _articleService.CreateArticle(articleRequest.Article, authenticatedUsername);
         var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Article.Slug);
         return Ok(new { article });
     }
-    
-    // todo authorize that user has the updated article
+
     [HttpPut("{slug}")]
-    public async Task<IActionResult> UpdateArticle([FromRoute] string slug, [FromBody] HttpArticleUpdateRequest articleRequest)
+    [Authorize]
+    public async Task<IActionResult> UpdateArticle([FromRoute] string slug,
+        [FromBody] HttpArticleUpdateRequest articleRequest)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        await _articleService.UpdateArticle(articleRequest.Article, slug);
-        var article = await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Article.Slug ?? slug);
-        return Ok(new { article });
+        var authenticatedUsername = User.Identity?.Name;
+        var authorizationResult =
+            await _authorizationService.AuthorizeAsync(User, new Slug(slug), CrudRequirements.Update);
+        if (authorizationResult.Succeeded)
+        {
+            await _articleService.UpdateArticle(articleRequest.Article, slug);
+            var article =
+                await _articleService.GetArticleBySlug(authenticatedUsername, articleRequest.Article.Slug ?? slug);
+            return Ok(new { article });
+        }
+
+        return new ForbidResult();
     }
-    
-    // todo authorize that user has the deleted article
-    [HttpDelete("{slug}")]
+
+    [HttpDelete("{slug}"), Authorize]
     public async Task<IActionResult> DeleteArticle([FromRoute] string slug)
     {
-        await _articleService.DeleteArticleAsync(slug);
-        return NoContent();
+        var authenticatedUsername = User.Identity?.Name;
+        var authorizationResult =
+            await _authorizationService.AuthorizeAsync(User, new Slug(slug), CrudRequirements.Delete);
+        if (authorizationResult.Succeeded)
+        {
+            await _articleService.DeleteArticleAsync(slug);
+            return NoContent();
+        }
+        return new ForbidResult();
     }
-    
+
     // todo authenticate user
-    [HttpPost("{slug}/favorite")]
+    [HttpPost("{slug}/favorite"), Authorize]
     public async Task<IActionResult> FavoriteArticle([FromRoute] string slug)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        var authenticatedUsername = User.Identity?.Name;
         await _articleService.FavoriteArticleAsync(slug, authenticatedUsername);
         var article = await _articleService.GetArticleBySlug(authenticatedUsername, slug);
         return Ok(new { article });
     }
-    
+
     // todo authenticate user
-    [HttpDelete("{slug}/favorite")]
+    [HttpDelete("{slug}/favorite"), Authorize]
     public async Task<IActionResult> UnfavoriteArticle([FromRoute] string slug)
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
+        var authenticatedUsername = User.Identity?.Name;
         await _articleService.UnfavoriteArticleAsync(slug, authenticatedUsername);
         var article = await _articleService.GetArticleBySlug(authenticatedUsername, slug);
         return Ok(new { article });

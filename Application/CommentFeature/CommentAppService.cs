@@ -27,7 +27,7 @@ public class CommentAppService : ICommentAppService
 
     public async Task<CommentResponse> GetCommentAsync(long id)
     {
-        var comment = await _commentService.GetComment(id);
+        var comment = await _commentService.GetCommentAsync(id);
         var commentResponse = await ToCommentResponse(comment);
         return commentResponse;
     }

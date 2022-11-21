@@ -12,12 +12,7 @@ public class UserAppService : IUserAppService
     {
         _userService = userService;
     }
-
-    public async Task Register(UserRequest userRequest)
-    {
-        await _userService.Create(userRequest.Adapt<User>());
-    }
-
+    
     public async Task Update(string username, UserRequest user)
     {
         await _userService.Update(username, user.Adapt<User>());
@@ -40,4 +35,13 @@ public class UserAppService : IUserAppService
     {
         await _userService.UnfollowUser(followerUsername, followedUsername);
     }
+
+    // public async Task GetProfileByEmailAsync(string email)
+    // {
+    //     var user = await _userService.GetByEmail(email);
+    //     var profile = user.Adapt<ProfileResponse>();
+    //     if (authenticatedUsername != null)
+    //         profile.Following = await _userService.IsFollowing(authenticatedUsername, profileUsername);
+    //     return profile;
+    // }
 }

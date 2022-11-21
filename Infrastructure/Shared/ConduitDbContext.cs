@@ -42,7 +42,8 @@ public class ConduitDbContext : DbContext
         modelBuilder.Entity<UserFollowUserEntity>()
             .HasOne<UserEntity>(entity => entity.Followed)
             .WithMany(entity => entity.UserFollowedByUsers)
-            .HasForeignKey(entity => entity.FollowedId);
+            .HasForeignKey(entity => entity.FollowedId)
+            .OnDelete(DeleteBehavior.NoAction);
         
         modelBuilder.Entity<ArticleEntity>()
             .HasOne<UserEntity>(entity => entity.Author)

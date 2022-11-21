@@ -9,4 +9,5 @@ public interface ICommentRepository
     void DeleteByIdAsync(long id);
     Task<IEnumerable<Comment>> ListCommentsAsync(string slug);
     Task<Comment?> GetCommentAsync(long id);
+    Task<bool> ExistsById(long commentId);
 }

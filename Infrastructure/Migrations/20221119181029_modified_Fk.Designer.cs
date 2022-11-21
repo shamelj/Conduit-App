@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ConduitDbContext))]
-    [Migration("20221117000248_temp")]
-    partial class temp
+    [Migration("20221119181029_modified_Fk")]
+    partial class modifiedFk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,7 +55,7 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -88,7 +88,6 @@ namespace Infrastructure.Migrations
                             Id = 1L,
                             AuthorId = 1L,
                             Body = "nice",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "interesting thumbnail",
                             Slug = "c#",
                             Title = "c#"
@@ -98,7 +97,6 @@ namespace Infrastructure.Migrations
                             Id = 2L,
                             AuthorId = 2L,
                             Body = "nice",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "interesting thumbnail",
                             Slug = "java",
                             Title = "Java"
@@ -108,7 +106,6 @@ namespace Infrastructure.Migrations
                             Id = 3L,
                             AuthorId = 3L,
                             Body = "nice",
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "interesting thumbnail",
                             Slug = "python",
                             Title = "Python"
@@ -369,7 +366,7 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.UserFeature.UserFavouriteArticleEntity", b =>
                 {
                     b.HasOne("Infrastructure.ArticleFeature.ArticleEntity", "Article")
-                        .WithMany()
+                        .WithMany("UserFavouriteArticles")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -388,7 +385,7 @@ namespace Infrastructure.Migrations
                     b.HasOne("Infrastructure.UserFeature.UserEntity", "Followed")
                         .WithMany("UserFollowedByUsers")
                         .HasForeignKey("FollowedId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Infrastructure.UserFeature.UserEntity", "Follower")
@@ -405,6 +402,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.ArticleFeature.ArticleEntity", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("UserFavouriteArticles");
                 });
 
             modelBuilder.Entity("Infrastructure.UserFeature.UserEntity", b =>

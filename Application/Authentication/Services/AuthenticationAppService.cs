@@ -2,43 +2,49 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Application.UserFeature;
 using Domain.Exceptions;
 using Domain.UserFeature.Models;
 using Domain.UserFeature.Services;
+using Mapster;
 using Microsoft.IdentityModel.Tokens;
+using WebAPI.Authentication;
 
-namespace Domain.Authentication;
+namespace Application.Authentication.Services;
 
-public interface IUserAuthenticationService
+public class AuthenticationAppService : IAuthenticationAppService
 {
-    Task<string> Login(User user);
-}
-
-internal class UserAuthenticationService : IUserAuthenticationService
-{
+    private readonly IUserService _userService;
+    
     private readonly string _secret;
-    private readonly IUserRepository _userRepository;
     private readonly double _minutesToLive;
 
-    public UserAuthenticationService(IUserRepository userRepository, string secret, double minutesToLive)
+    public AuthenticationAppService(IUserService userService, string secret, double minutesToLive)
     {
-        _userRepository = userRepository;
+        _userService = userService;
         _secret = secret;
         _minutesToLive = minutesToLive;
     }
 
-    public async Task<string> Login(User userCredintials)
+    public async Task Register(UserRequest userRequest)
     {
-        var userDetails = await _userRepository.GetByUsername(userCredintials.Username) ?? throw new ConduitException
-            { Message = "User not found", StatusCode = HttpStatusCode.NotFound };
-        return CreateJwtToken(userDetails);
+        await _userService.Create(userRequest.Adapt<User>());
+    }
+
+    public async Task<string> Login(UserLogin userLogin)
+    {
+        User user = await _userService.GetByEmail(userLogin.Email);
+        if (!user.Password.Equals(userLogin.Password))
+            throw new ConduitException { Message = "Incorrect password", StatusCode = HttpStatusCode.BadRequest };
+        string token = CreateJwtToken(user);
+        return token;
     }
 
     private string CreateJwtToken(User userDetails)
     {
         var claims = new List<Claim>
         {
-            new("Username", userDetails.Username),
+            new( ClaimTypes.Name, userDetails.Username),
             new("Email", userDetails.Email),
             new("Bio", userDetails.Bio),
             new("Image", userDetails.Image),

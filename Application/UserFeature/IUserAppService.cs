@@ -1,8 +1,8 @@
-﻿namespace Application.UserFeature;
+﻿using WebAPI.Authentication;
+namespace Application.UserFeature;
 
 public interface IUserAppService
 {
-    Task Register(UserRequest user);
 
     Task Update(string username, UserRequest user);
 
@@ -10,4 +10,5 @@ public interface IUserAppService
 
     Task FollowUser(string followerUsername, string followedUsername);
     Task UnfollowUser(string followerUsername, string followedUsername);
+    // Task GetProfileByEmailAsync(string email);
 }

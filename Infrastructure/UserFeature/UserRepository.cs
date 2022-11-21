@@ -12,7 +12,6 @@ public class UserRepository : IUserRepository
     private readonly DbSet<UserEntity> _dbSet;
     private readonly DbSet<UserFollowUserEntity> _userFollowUserdDbSet;
 
-
     public UserRepository(ConduitDbContext context)
     {
         _context = context;
@@ -75,5 +74,28 @@ public class UserRepository : IUserRepository
                                                userFollowUser.Followed.Username.Equals(followedUsername));
         
         if (userFollowUser != null) _userFollowUserdDbSet.Remove(userFollowUser);
+    }
+
+    public async Task<User?> GetByEmail(string email)
+    {
+        var userEntity = await _dbSet.SingleOrDefaultAsync(entity => entity.Email.Equals(email));
+        return userEntity?.Adapt<User>();
+    }
+
+    public async Task<bool> UserHasArticleAsync(string username, string slug)
+    {
+        return await _dbSet
+            .Where(user => user.Username.Equals(username))
+            .Where(user => user.Articles.Any(article => article.Slug.Equals(slug)))
+            .AnyAsync();
+
+    }
+
+    public async Task<bool> UserHasCommentAsync(string username, long commentId)
+    {
+        return await _dbSet
+            .Where(user => user.Username.Equals(username))
+            .Where(user => user.Comments.Any(comment => comment.Id.Equals(commentId)))
+            .AnyAsync();
     }
 }

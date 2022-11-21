@@ -62,6 +62,11 @@ public class CommentRepository : ICommentRepository
         return commentEntity?.Adapt<Comment>();
     }
 
+    public async Task<bool> ExistsById(long commentId)
+    {
+        return await _dbSet.AnyAsync(comment => comment.Id.Equals(commentId));
+    }
+
     private async Task<CommentEntity> ToCommentEntityAsync(Comment comment)
     {
         var commentEntity = comment.Adapt<CommentEntity>();

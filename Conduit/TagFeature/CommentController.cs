@@ -10,7 +10,7 @@ namespace WebAPI.TagFeature;
 [ConduitExceptionHandlerFilter]
 public class TagController : ControllerBase
 {
-    private static readonly string testUsername = "shamel";
+    private static readonly string TestUsername = "shamel";
     private readonly ITagAppService _tagAppService;
     public TagController(ITagAppService tagAppService)
     {
@@ -20,8 +20,7 @@ public class TagController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetTags()
     {
-        var authenticatedUsername = User.FindFirstValue("Username") ?? testUsername;
-        IEnumerable<string> tags = await _tagAppService.GetTagsAsync();
+        var authenticatedUsername = User.Identity?.Name;        IEnumerable<string> tags = await _tagAppService.GetTagsAsync();
         return Ok(new { Tags = tags });
     }
 }

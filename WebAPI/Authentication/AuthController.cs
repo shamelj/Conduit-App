@@ -49,6 +49,18 @@ public class AuthController : ControllerBase
         return Ok(new { User = user });
     }
 
+    [HttpPut("user")]
+    [Authorize]
+    public async Task<IActionResult> UpdateUser(HttpUserUpdateRequest userUpdateRequest)
+    {
+        var username = User.Identity.Name;
+        await _authenticationAppService.UpdateUserAsync(username, userUpdateRequest.User);
+        var user = await _authenticationAppService.GetUserByUsername(userUpdateRequest.User.Username ?? username);
+        await _authenticationAppService.LogoutToken(GetCurrentToken());
+        //user.Token = GetCurrentToken();
+        return Ok(new { User = user });
+    }
+
     [HttpPost("users/logout")]
     public async Task<IActionResult> Logout()
     {

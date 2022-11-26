@@ -154,6 +154,16 @@ public static class Configuration
             .Ignore(entity => entity.Author)
             .IgnoreNullValues(true);
 
+        TypeAdapterConfig<UserEntity, UserEntity>
+            .NewConfig()
+            .Ignore(entity => entity.Articles)
+            .Ignore(entity => entity.Id)
+            .Ignore(entity => entity.Comments)
+            .Ignore(entity => entity.UserFavouriteArticles)
+            .Ignore(entity => entity.UserFollowsUsers)
+            .Ignore(entity => entity.UserFollowedByUsers)
+            .IgnoreNullValues(true);
+
         TypeAdapterConfig<CommentEntity, Comment>
             .NewConfig()
             .Map(comment => comment.Username, commentEntity => commentEntity.Author!.Username)

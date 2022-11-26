@@ -16,8 +16,9 @@ public class LogoutMiddleware : IMiddleware
     {
         if (!context.Response.HasStarted && !await _logoutRepository.IsActiveAsync(GetCurrentToken(context)))
             context.Request.Headers["Authorization"] = string.Empty;
-        
-        context.Request.Headers["Authorization"] = context.Request.Headers["Authorization"].ToString().Replace("Token","Bearer");
+
+        context.Request.Headers["Authorization"] =
+            context.Request.Headers["Authorization"].ToString().Replace("Token", "Bearer");
         await next(context);
     }
 

@@ -12,4 +12,5 @@ public interface IAuthenticationAppService
     Task<UserResponse> GetUserByUsername(string username);
     Task<UserResponse> GetUserByEmail(string email);
     Task LogoutToken(string token);
+    Task UpdateUserAsync(string username, UserUpdateRequest userUpdateRequest);
 }

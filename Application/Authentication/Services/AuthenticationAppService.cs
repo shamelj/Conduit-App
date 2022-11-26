@@ -60,6 +60,11 @@ public class AuthenticationAppService : IAuthenticationAppService
         await _logoutRepository.Logout(token);
     }
 
+    public async Task UpdateUserAsync(string username, UserUpdateRequest userUpdateRequest)
+    {
+        await _userService.Update(username, userUpdateRequest.Adapt<User>());
+    }
+
     private string CreateJwtToken(User userDetails)
     {
         var claims = new List<Claim>

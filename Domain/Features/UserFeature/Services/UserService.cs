@@ -96,9 +96,9 @@ public class UserService : IUserService
         if (!await _userRepository.ExistsByUsername(username))
             throw new ConduitException
                 { Message = "No such username, make sure you're logged in", StatusCode = HttpStatusCode.NotFound };
-        var hasUniqueId = !await _userRepository.ExistsByUsername(updatedUser.Username) ||
-                          username.Equals(updatedUser.Username);
-        if (!hasUniqueId)
+        var hasUniqueUsername = !await _userRepository.ExistsByUsername(updatedUser.Username) ||
+                                username.Equals(updatedUser.Username);
+        if (!hasUniqueUsername)
             throw new ConduitException
                 { Message = "Entered duplicated username", StatusCode = HttpStatusCode.BadRequest };
         await _userRepository.Update(username, updatedUser);

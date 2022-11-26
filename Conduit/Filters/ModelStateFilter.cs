@@ -12,6 +12,7 @@ public class ModelStateFilter : IAsyncActionFilter
             context.Result = new BadRequestObjectResult(context.ModelState);
             return;
         }
+
         await next();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Application.Authentication.Requirements;
-using Domain.CommentFeature.Services;
-using Domain.UserFeature.Services;
+using Domain.Features.CommentFeature;
+using Domain.Features.UserFeature.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 

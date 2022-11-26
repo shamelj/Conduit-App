@@ -37,7 +37,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("ArticleTag", (string)null);
                 });
 
-            modelBuilder.Entity("Infrastructure.ArticleFeature.ArticleEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.ArticleFeature.ArticleEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,17 +84,17 @@ namespace Infrastructure.Migrations
                         {
                             Id = 1L,
                             AuthorId = 1L,
-                            Body = "nice",
+                            Body = "elegant language",
                             Description = "interesting thumbnail",
-                            Slug = "c#",
-                            Title = "c#"
+                            Slug = "c-sharp",
+                            Title = "C-sharp"
                         },
                         new
                         {
                             Id = 2L,
                             AuthorId = 2L,
-                            Body = "nice",
-                            Description = "interesting thumbnail",
+                            Body = "very long body",
+                            Description = "boring thumbnail",
                             Slug = "java",
                             Title = "Java"
                         },
@@ -102,14 +102,32 @@ namespace Infrastructure.Migrations
                         {
                             Id = 3L,
                             AuthorId = 3L,
-                            Body = "nice",
-                            Description = "interesting thumbnail",
-                            Slug = "python",
-                            Title = "Python"
+                            Body = "having a hard time",
+                            Description = "",
+                            Slug = "earth",
+                            Title = "Earth"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            AuthorId = 4L,
+                            Body = "Do your best",
+                            Description = "What you need to know",
+                            Slug = "university-life",
+                            Title = "University Life"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            AuthorId = 5L,
+                            Body = "Very delicious",
+                            Description = "try it once love it forever",
+                            Slug = "spaghetti",
+                            Title = "Spaghetti"
                         });
                 });
 
-            modelBuilder.Entity("Infrastructure.CommentFeature.CommentEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.CommentFeature.CommentEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,7 +163,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1L,
-                            ArticleId = 1L,
+                            ArticleId = 2L,
                             AuthorId = 1L,
                             Body = "Nice article",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -153,7 +171,7 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 2L,
-                            ArticleId = 2L,
+                            ArticleId = 1L,
                             AuthorId = 2L,
                             Body = "bad article",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -163,12 +181,28 @@ namespace Infrastructure.Migrations
                             Id = 3L,
                             ArticleId = 3L,
                             AuthorId = 3L,
-                            Body = "meh",
+                            Body = "good to know",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            ArticleId = 4L,
+                            AuthorId = 5L,
+                            Body = "interesting",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            ArticleId = 5L,
+                            AuthorId = 3L,
+                            Body = "looks delicious",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
 
-            modelBuilder.Entity("Infrastructure.TagFeature.TagEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.TagFeature.TagEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,16 +225,31 @@ namespace Infrastructure.Migrations
                         new
                         {
                             Id = 1L,
-                            Name = "science"
+                            Name = "legacy code"
                         },
                         new
                         {
                             Id = 2L,
                             Name = "programming"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "nature"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "education"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Name = "food"
                         });
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -263,10 +312,28 @@ namespace Infrastructure.Migrations
                             Image = "",
                             Password = "12345678",
                             Username = "ahmad"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Bio = "",
+                            Email = "ali.com",
+                            Image = "",
+                            Password = "12345678",
+                            Username = "ali"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Bio = "",
+                            Email = "amal.com",
+                            Image = "",
+                            Password = "12345678",
+                            Username = "amal"
                         });
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserFavouriteArticleEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserFavouriteArticleEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -289,9 +356,41 @@ namespace Infrastructure.Migrations
                         .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("UserFavouriteArticle");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            ArticleId = 3L,
+                            UserId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            ArticleId = 1L,
+                            UserId = 1L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            ArticleId = 4L,
+                            UserId = 2L
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            ArticleId = 2L,
+                            UserId = 3L
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            ArticleId = 3L,
+                            UserId = 4L
+                        });
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserFollowUserEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserFollowUserEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -315,26 +414,58 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("UserFollowUser");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            FollowedId = 2L,
+                            FollowerId = 1L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            FollowedId = 3L,
+                            FollowerId = 2L
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            FollowedId = 4L,
+                            FollowerId = 3L
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            FollowedId = 5L,
+                            FollowerId = 4L
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            FollowedId = 1L,
+                            FollowerId = 5L
+                        });
                 });
 
             modelBuilder.Entity("ArticleEntityTagEntity", b =>
                 {
-                    b.HasOne("Infrastructure.ArticleFeature.ArticleEntity", null)
+                    b.HasOne("Infrastructure.Features.ArticleFeature.ArticleEntity", null)
                         .WithMany()
                         .HasForeignKey("ArticlesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.TagFeature.TagEntity", null)
+                    b.HasOne("Infrastructure.Features.TagFeature.TagEntity", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Infrastructure.ArticleFeature.ArticleEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.ArticleFeature.ArticleEntity", b =>
                 {
-                    b.HasOne("Infrastructure.UserFeature.UserEntity", "Author")
+                    b.HasOne("Infrastructure.Features.UserFeature.UserEntity", "Author")
                         .WithMany("Articles")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,15 +474,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Infrastructure.CommentFeature.CommentEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.CommentFeature.CommentEntity", b =>
                 {
-                    b.HasOne("Infrastructure.ArticleFeature.ArticleEntity", "Article")
+                    b.HasOne("Infrastructure.Features.ArticleFeature.ArticleEntity", "Article")
                         .WithMany("Comments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.UserFeature.UserEntity", "Author")
+                    b.HasOne("Infrastructure.Features.UserFeature.UserEntity", "Author")
                         .WithMany("Comments")
                         .HasForeignKey("AuthorId");
 
@@ -360,15 +491,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserFavouriteArticleEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserFavouriteArticleEntity", b =>
                 {
-                    b.HasOne("Infrastructure.ArticleFeature.ArticleEntity", "Article")
+                    b.HasOne("Infrastructure.Features.ArticleFeature.ArticleEntity", "Article")
                         .WithMany("UserFavouriteArticles")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.UserFeature.UserEntity", "User")
+                    b.HasOne("Infrastructure.Features.UserFeature.UserEntity", "User")
                         .WithMany("UserFavouriteArticles")
                         .HasForeignKey("UserId");
 
@@ -377,15 +508,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserFollowUserEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserFollowUserEntity", b =>
                 {
-                    b.HasOne("Infrastructure.UserFeature.UserEntity", "Followed")
+                    b.HasOne("Infrastructure.Features.UserFeature.UserEntity", "Followed")
                         .WithMany("UserFollowedByUsers")
                         .HasForeignKey("FollowedId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Infrastructure.UserFeature.UserEntity", "Follower")
+                    b.HasOne("Infrastructure.Features.UserFeature.UserEntity", "Follower")
                         .WithMany("UserFollowsUsers")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,14 +527,14 @@ namespace Infrastructure.Migrations
                     b.Navigation("Follower");
                 });
 
-            modelBuilder.Entity("Infrastructure.ArticleFeature.ArticleEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.ArticleFeature.ArticleEntity", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("UserFavouriteArticles");
                 });
 
-            modelBuilder.Entity("Infrastructure.UserFeature.UserEntity", b =>
+            modelBuilder.Entity("Infrastructure.Features.UserFeature.UserEntity", b =>
                 {
                     b.Navigation("Articles");
 

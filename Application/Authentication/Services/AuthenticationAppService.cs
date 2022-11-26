@@ -2,28 +2,31 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using Application.UserFeature;
-using Domain.Exceptions;
-using Domain.UserFeature.Models;
-using Domain.UserFeature.Services;
+using Application.Authentication.Models;
+using Application.Features.UserFeature.Models;
+using Domain.Authentication;
+using Domain.Features.UserFeature.Models;
+using Domain.Features.UserFeature.Services;
+using Domain.Shared.Exceptions;
 using Mapster;
 using Microsoft.IdentityModel.Tokens;
-using WebAPI.Authentication;
 
 namespace Application.Authentication.Services;
 
 public class AuthenticationAppService : IAuthenticationAppService
 {
-    private readonly IUserService _userService;
-    
-    private readonly string _secret;
+    private readonly ILogoutRepository _logoutRepository;
     private readonly double _minutesToLive;
+    private readonly string _secret;
+    private readonly IUserService _userService;
 
-    public AuthenticationAppService(IUserService userService, string secret, double minutesToLive)
+    public AuthenticationAppService(IUserService userService, string secret, double minutesToLive,
+        ILogoutRepository logoutRepository)
     {
         _userService = userService;
         _secret = secret;
         _minutesToLive = minutesToLive;
+        _logoutRepository = logoutRepository;
     }
 
     public async Task Register(UserRequest userRequest)
@@ -33,21 +36,36 @@ public class AuthenticationAppService : IAuthenticationAppService
 
     public async Task<string> Login(UserLogin userLogin)
     {
-        User user = await _userService.GetByEmail(userLogin.Email);
+        var user = await _userService.GetByEmail(userLogin.Email);
         if (!user.Password.Equals(userLogin.Password))
             throw new ConduitException { Message = "Incorrect password", StatusCode = HttpStatusCode.BadRequest };
-        string token = CreateJwtToken(user);
+        var token = CreateJwtToken(user);
         return token;
+    }
+
+    public async Task<UserResponse> GetUserByUsername(string username)
+    {
+        var user = await _userService.GetByUsername(username);
+        return user.Adapt<UserResponse>();
+    }
+
+    public async Task<UserResponse> GetUserByEmail(string email)
+    {
+        var user = await _userService.GetByEmail(email);
+        return user.Adapt<UserResponse>();
+    }
+
+    public async Task LogoutToken(string token)
+    {
+        await _logoutRepository.Logout(token);
     }
 
     private string CreateJwtToken(User userDetails)
     {
         var claims = new List<Claim>
         {
-            new( ClaimTypes.Name, userDetails.Username),
-            new("Email", userDetails.Email),
-            new("Bio", userDetails.Bio),
-            new("Image", userDetails.Image),
+            new(ClaimTypes.Name, userDetails.Username),
+            new(ClaimTypes.Email, userDetails.Email)
         };
         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
         var creds = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha512Signature);

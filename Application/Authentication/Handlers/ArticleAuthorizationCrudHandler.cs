@@ -1,5 +1,6 @@
 ﻿using Application.Authentication.Requirements;
-using Domain.UserFeature.Services;
+using Domain.Features.ArticleFeature;
+using Domain.Features.UserFeature.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
@@ -19,12 +20,12 @@ public class ArticleAuthorizationCrudHandler :
         OperationAuthorizationRequirement requirement,
         Slug slug)
     {
-        var AuthorizableCrudOperations = new List<string>
+        var authorizableCrudOperations = new List<string>
         {
             CrudRequirements.Delete.Name,
             CrudRequirements.Update.Name
         };
-        var operationNeedsAuthorization = AuthorizableCrudOperations.Contains(requirement.Name);
+        var operationNeedsAuthorization = authorizableCrudOperations.Contains(requirement.Name);
         var userHasArticle = await _userService.UserHasArticleAsync(context.User?.Identity?.Name, slug.Value);
         if (userHasArticle && operationNeedsAuthorization)
             context.Succeed(requirement);

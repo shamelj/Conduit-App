@@ -94,6 +94,7 @@ public static class Configuration
         // domain services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IArticleService, ArticleService>();
+        services.AddScoped<IArticleValidator, ArticleValidator>();
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();

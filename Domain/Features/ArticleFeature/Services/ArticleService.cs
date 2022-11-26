@@ -1,8 +1,6 @@
-using System.Net;
 using Domain.Features.ArticleFeature.Models;
 using Domain.Features.UserFeature.Services;
 using Domain.Shared;
-using Domain.Shared.Exceptions;
 
 namespace Domain.Features.ArticleFeature.Services;
 
@@ -14,39 +12,38 @@ public class ArticleService : IArticleService
 
     private readonly IUserRepository _userRepository;
 
-    public ArticleService(IArticleRepository articleRepository, IUnitOfWork unitOfWork, IUserRepository userRepository)
+    private readonly IArticleValidator _validator;
+
+    public ArticleService(IArticleRepository articleRepository,
+        IUnitOfWork unitOfWork,
+        IUserRepository userRepository,
+        IArticleValidator validator)
     {
         _articleRepository = articleRepository;
         _unitOfWork = unitOfWork;
         _userRepository = userRepository;
+        _validator = validator;
     }
 
     public async Task CreateAsync(Article article)
     {
-        if (await _articleRepository.ExistsBySlugAsync(article.Slug))
-            throw new ConduitException
-                { Message = "Entered duplicated title/slug", StatusCode = HttpStatusCode.BadRequest };
+        await _validator.SlugMustBeUniqueAsync(article.Slug);
         await _articleRepository.CreateAsync(article);
         await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<Article> GetBySlugAsync(string slug)
     {
-        var article = await _articleRepository.GetBySlugAsync(slug) ?? throw new ConduitException
-            { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
+        await _validator.ArticleMustExistBySlugAsync(slug);
+        var article = await _articleRepository.GetBySlugAsync(slug);
         return article;
     }
 
     public async Task UpdateAsync(string originalSlug, Article article)
     {
-        if (!await _articleRepository.ExistsBySlugAsync(originalSlug))
-            throw new ConduitException
-                { Message = "No such article to update", StatusCode = HttpStatusCode.NotFound };
-        var hasUniqueId = originalSlug.Equals(article.Slug) ||
-                          !await _articleRepository.ExistsBySlugAsync(article.Slug);
-        if (!hasUniqueId)
-            throw new ConduitException
-                { Message = "Entered duplicated title/slug", StatusCode = HttpStatusCode.BadRequest };
+        await _validator.ArticleMustExistBySlugAsync(originalSlug);
+        if (!originalSlug.Equals(article.Slug))
+            await _validator.SlugMustBeUniqueAsync(article.Slug);
         await _articleRepository.UpdateAsync(originalSlug, article);
         await _unitOfWork.SaveChangesAsync();
     }
@@ -64,9 +61,7 @@ public class ArticleService : IArticleService
 
     public async Task<bool> FavoritedByUser(string slug, string username)
     {
-        if (!await _articleRepository.ExistsBySlugAsync(slug))
-            throw new ConduitException
-                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
+        await _validator.ArticleMustExistBySlugAsync(slug);
         return await _articleRepository.FavoritedByUser(slug, username);
     }
 
@@ -77,12 +72,8 @@ public class ArticleService : IArticleService
 
     public async Task FavoriteArticleAsync(string slug, string followingUsername)
     {
-        if (!await _articleRepository.ExistsBySlugAsync(slug))
-            throw new ConduitException
-                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
-        if (!await _userRepository.ExistsByUsername(followingUsername))
-            throw new ConduitException
-                { Message = "No such username", StatusCode = HttpStatusCode.NotFound };
+        await _validator.ArticleMustExistBySlugAsync(slug);
+        await _validator.UserMustExistAsync(followingUsername);
         if (await _articleRepository.FavoritedByUser(slug, followingUsername))
             return;
         await _articleRepository.FavoriteArticleAsync(slug, followingUsername);
@@ -91,12 +82,8 @@ public class ArticleService : IArticleService
 
     public async Task UnfavoriteArticleAsync(string slug, string followingUsername)
     {
-        if (!await _articleRepository.ExistsBySlugAsync(slug))
-            throw new ConduitException
-                { Message = "No such article", StatusCode = HttpStatusCode.NotFound };
-        if (!await _userRepository.ExistsByUsername(followingUsername))
-            throw new ConduitException
-                { Message = "No such username", StatusCode = HttpStatusCode.NotFound };
+        await _validator.ArticleMustExistBySlugAsync(slug);
+        await _validator.UserMustExistAsync(followingUsername);
         await _articleRepository.UnfavoriteArticleAsync(slug, followingUsername);
         await _unitOfWork.SaveChangesAsync();
     }
